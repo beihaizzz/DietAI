@@ -21,6 +21,7 @@ from routers.food_router import router as food_router
 from routers.health_router import router as health_router
 from routers.chat_router import router as chat_router
 from routers.analysis_chat_router import router as analysis_chat_router
+from routers.goal_router import router as goal_router
 
 settings = get_settings()
 
@@ -36,7 +37,7 @@ async def lifespan(app: FastAPI):
     """应用生命周期管理"""
     # 启动时执行
     logger.info("正在启动DietAI后端服务...")
-    
+
     # 创建数据库表
     try:
         create_tables()
@@ -44,7 +45,7 @@ async def lifespan(app: FastAPI):
     except Exception as e:
         logger.error(f"数据库表创建失败: {e}")
         raise
-    
+
     # 测试数据库连接
     try:
         with engine.connect() as conn:
@@ -52,12 +53,28 @@ async def lifespan(app: FastAPI):
     except Exception as e:
         logger.error(f"数据库连接测试失败: {e}")
         raise
-    
+
+    # 初始化后台任务调度器
+    try:
+        from shared.tasks import setup_scheduler
+        scheduler = setup_scheduler()
+        logger.info("后台任务调度器启动完成")
+    except Exception as e:
+        logger.warning(f"后台任务调度器启动失败 (非致命): {e}")
+
     logger.info("DietAI后端服务启动完成")
     yield
-    
+
     # 关闭时执行
     logger.info("正在关闭DietAI后端服务...")
+
+    # 关闭后台任务调度器
+    try:
+        from shared.tasks import shutdown_scheduler
+        shutdown_scheduler()
+        logger.info("后台任务调度器已关闭")
+    except Exception as e:
+        logger.warning(f"后台任务调度器关闭失败: {e}")
 
 # 创建FastAPI应用
 app = FastAPI(
@@ -213,6 +230,7 @@ app.include_router(auth_router, prefix="/api", tags=["认证"])
 app.include_router(user_router, prefix="/api", tags=["用户"])
 app.include_router(food_router, prefix="/api", tags=["食物"])
 app.include_router(health_router, prefix="/api", tags=["健康"])
+app.include_router(goal_router, prefix="/api", tags=["目标追踪"])
 app.include_router(chat_router, prefix="/api", tags=["AI对话"])
 app.include_router(analysis_chat_router, prefix="/api", tags=["分析页面聊天"])
 
