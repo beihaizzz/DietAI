@@ -162,6 +162,7 @@ langgraph_cache/
 # ==========================================
 .idea/
 .vscode/
+.cursor/
 *.swp
 *.swo
 *~
@@ -187,11 +188,11 @@ $RECYCLE.BIN/
 # ==========================================
 # Documentation & Personal Files
 # ==========================================
+docs/
 README-local.md
 CLAUDE.local.md
 *.draft.md
 notes/
-docs/personal/
 
 # ==========================================
 # Logs & Runtime
@@ -228,9 +229,9 @@ coverage/
 *.tar.gz
 *.zip
 *.7z
-
-
-# ==========================================
-# docs
-# ==========================================
-docs/nul
+nul
+.claude/
+.mcp.json
+GEMINI.md
+*.skill
+prc/
