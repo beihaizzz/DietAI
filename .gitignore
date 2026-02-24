@@ -189,7 +189,6 @@ $RECYCLE.BIN/
 # Documentation & Personal Files
 # ==========================================
 docs/
-README-local.md
 CLAUDE.local.md
 *.draft.md
 notes/
@@ -235,3 +234,8 @@ nul
 GEMINI.md
 *.skill
 prc/
+README_BETA.md
+README-local.md
+pack_beta.ps1
+test_connection.dart
+test_redis_fix.py
