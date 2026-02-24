@@ -2,7 +2,9 @@
   "dependencies": ["."],
   "graphs": {
     "nutrition_agent": "./agent/agent.py:graph",
-    "chat_agent": "./agent/chat_agent.py:chat_graph"
+    "enhanced_nutrition_agent": "./agent/enhanced_nutrition/enhanced_agent.py:enhanced_graph",
+    "chat_agent": "./agent/chat_agent.py:chat_graph",
+    "goal_tracking_agent": "./agent/goal_tracking/goal_agent.py:goal_graph"
   },
   "env": ".env"
 }

@@ -29,8 +29,8 @@ router = APIRouter(prefix="/foods", tags=["食物记录"])
 
 async def generate_sse_stream(
         food_data: FoodRecordCreate,
-        current_user: User = Depends(get_current_user),
-        db: Session = Depends(get_db)
+        current_user: User,
+        db: Session
 ):
     try:
         # 1. 首先发送创建记录的状态
@@ -79,7 +79,7 @@ async def generate_sse_stream(
 
                 # 使用Agent分析图片（流式输出）
                 analysis_complete_data = None
-                async for chunk in analyze_food_image_with_agent(food_data.image_url, current_user,db):
+                async for chunk in analyze_food_image_with_agent(food_data.image_url, current_user, db):
                     if chunk["type"] == "analysis_progress":
                         yield f"data: {json.dumps({'type': 'analysis_progress', 'data': chunk['data'], 'success': True}, ensure_ascii=False)}\n\n"
                     elif chunk["type"] == "analysis_complete":
@@ -251,7 +251,7 @@ async def _run_background_analysis(image_url: str, current_user: User, food_reco
 
             # 运行分析
             analysis_complete_data = None
-            async for chunk in analyze_food_image_with_agent(image_url, current_user):
+            async for chunk in analyze_food_image_with_agent(image_url, current_user, db):
                 if chunk["type"] == "analysis_complete":
                     analysis_complete_data = chunk["data"]
                     break
@@ -423,7 +423,7 @@ async def analyze_food_image_with_agent(image_url: str, current_user: User, db: 
 
 async def get_user_preferences(db: Session, user_id: int):
     try:
-        user = db.query(User).filter(user_id == User.id).first()
+        user = db.query(User).filter(User.id == user_id).first()
         if not user:
             return {
                 "dietary_restrictions": [],
@@ -552,7 +552,7 @@ async def create_nutrition_detail_from_analysis(food_record_id: int, nutrition_f
             protein=nutrition_facts.macronutrients.protein or 0,
             fat=nutrition_facts.macronutrients.fat or 0,
             carbohydrates=nutrition_facts.macronutrients.carbohydrates or 0,
-            # dietary_fiber=0,  #TODO:Agent忘写膳食纤维了(下面同理) 已完成
+            # dietary_fiber=0,
             # sugar=0,
             # sodium=0,
             # cholesterol=0,
@@ -606,14 +606,14 @@ async def get_food_records(
 ):
     """获取食物记录列表"""
     try:
-        query = db.query(FoodRecord).filter(current_user.id == FoodRecord.user_id)
+        query = db.query(FoodRecord).filter(FoodRecord.user_id == current_user.id)
 
         if start_date:
             query = query.filter(FoodRecord.record_date >= start_date)
         if end_date:
             query = query.filter(FoodRecord.record_date <= end_date)
         if meal_type:
-            query = query.filter(meal_type == FoodRecord.meal_type)
+            query = query.filter(FoodRecord.meal_type == meal_type)
 
         # 总数统计
         total = query.count()
