@@ -52,8 +52,33 @@ async def generate_sse_stream(
         db.commit()
         db.refresh(food_record)
 
-        # 2. 发送记录创建完成的状态
-        record_data = {
+        # 如果有图片URL，异步启动分析（不等待完成）
+        if food_data.image_url:
+            try:
+                # 设置分析状态为处理中
+                food_record.analysis_status = 2  # 分析中
+                db.commit()
+
+                # 异步分析（在后台进行）
+                import asyncio
+                from concurrent.futures import ThreadPoolExecutor
+
+                def background_analysis():
+                    asyncio.run( _run_background_analysis(food_data.image_url, current_user, food_record.id))
+
+                executor = ThreadPoolExecutor(max_workers=1)
+                executor.submit(background_analysis)
+
+            except Exception as e:
+                print(f"启动后台分析失败: {str(e)}")
+                # 分析启动失败，但记录已创建成功
+
+        # 清除相关缓存
+        cache_key = f"nutrition:daily:{current_user.id}:{food_data.record_date}"
+        cache_service.redis.delete(cache_key)
+
+        # 构建响应数据
+        response_data = {
             "id": food_record.id,
             "user_id": food_record.user_id,
             "record_date": food_record.record_date.isoformat(),
@@ -403,7 +428,9 @@ async def analyze_food_image_with_agent(image_url: str, current_user: User, db: 
                         }
                     }
                 else:
-                    print(f"Agent分析中: {chunk.data}")
+                    print(f"Agent正在分析: {chunk.data}")
+                    print("===================")
+                    print(chunk.data.get("current_step"))
                     yield {
                         "type": "analysis_progress",
                         "data": {
