@@ -1,5 +1,5 @@
 import asyncio
-from langchain.schema import Document
+from langchain_core.documents import Document
 
 from langchain_core.messages import HumanMessage, SystemMessage
 from langchain_core.runnables import RunnableConfig
@@ -96,7 +96,7 @@ def analyze_image(state: AgentState) -> AgentState:
         ]
 
         response = state['vision_model'].invoke(messages)
-        state["image_analysis"] = response.content
+        state["image_analysis"] = str(response.content)
         state["current_step"] = "image_analyzed"
         print(state["current_step"])
 

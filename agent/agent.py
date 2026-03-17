@@ -7,8 +7,8 @@ from agent.utils.states import AgentState, InputState, OutputState
 workflow = StateGraph(
     state_schema=AgentState,
     config_schema=Configuration,
-    input_schema=InputState,
-    output_schema=OutputState
+    input=InputState,
+    output=OutputState,
 )
 
 workflow.add_node("state_init", state_init)
