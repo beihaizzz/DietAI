@@ -1,5 +1,7 @@
 
-from typing import Dict, List, Optional, TypedDict
+from typing import Dict, List, Optional
+
+from typing_extensions import TypedDict
 
 from langchain_openai.chat_models.base import BaseChatOpenAI
 

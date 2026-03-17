@@ -22,6 +22,7 @@ from routers.health_router import router as health_router
 from routers.chat_router import router as chat_router
 from routers.analysis_chat_router import router as analysis_chat_router
 from routers.goal_router import router as goal_router
+from routers.deep_router import router as deep_router
 
 settings = get_settings()
 
@@ -233,6 +234,7 @@ app.include_router(health_router, prefix="/api", tags=["健康"])
 app.include_router(goal_router, prefix="/api", tags=["目标追踪"])
 app.include_router(chat_router, prefix="/api", tags=["AI对话"])
 app.include_router(analysis_chat_router, prefix="/api", tags=["分析页面聊天"])
+app.include_router(deep_router, prefix="/api", tags=["DietDeepAgent"])
 
 # 启动服务器
 if __name__ == "__main__":
