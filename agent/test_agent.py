@@ -26,7 +26,7 @@ class TestState(TypedDict):
 def call_model(state: TestState) -> dict:
     """调用 Qwen 模型并返回响应"""
     query = state["query"]
-    model_name = state.get("model_name", "qwen-plus")
+    model_name = state.get("model_name")
 
     try:
         # DashScope 兼容 OpenAI 接口
