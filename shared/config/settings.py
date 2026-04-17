@@ -15,7 +15,6 @@ class Settings(BaseSettings):
     log_level: str = Field(default="INFO", description="日志级别")
 
     # 服务器配置
-    # host: str = Field(default="0.0.0.0", description="服务器主机")
     host: str = Field(default="localhost", description="服务器主机")
     port: int = Field(default=8000, description="服务器端口")
     reload: bool = Field(default=False, description="热重载")
