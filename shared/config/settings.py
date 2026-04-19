@@ -34,7 +34,7 @@ class Settings(BaseSettings):
     redis_url: str = Field(default="redis://localhost:6379/0", description="Redis连接URL")
 
     # Vector store 配置
-    VECTOR_STORE_PATH: str = Field(default="agent/VectorStore", description="向量存储持久化目录")
+    VECTOR_STORE_PATH: str = Field(default="agents/VectorStore", description="向量存储持久化目录")
     VECTOR_COLLECTION_NAME: str = Field(default="vector_collection_for_agent", description="向量集合名")
     # 暂时不需要，后期可添加 EMBEDDINGS_MODEL: str = Field(default="OpenAIEmbeddings()", description="使用的 Embeddings 模型")
     DOC_PATH: str = Field(default="./docs", description="文件路径")

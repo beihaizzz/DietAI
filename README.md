@@ -60,20 +60,24 @@ DietAI/
 ├── Dockerfile                    # 后端容器镜像
 ├── .env.example                  # 环境变量模板
 │
-├── agent/                        # --- LangGraph AI Agent ---
-│   ├── agent.py                  # 核心: nutrition_agent 图定义
-│   ├── chat_agent.py             # 核心: chat_agent 图定义
-│   ├── enhanced_nutrition/       # 增强营养分析 Agent
-│   ├── goal_tracking/            # 目标追踪 Agent
-│   ├── memory/                   # 用户记忆管理（长期偏好记录）
-│   ├── common_utils/             # 公共工具: 图片处理、模型调用、RAG 检索、Redis
-│   ├── utils/                    # 节点函数、状态定义、提示词、Pydantic 结构体
-│   │   ├── nodes.py              #   nutrition_agent 各节点实现
-│   │   ├── states.py             #   nutrition_agent 状态定义
-│   │   ├── chat_nodes.py         #   chat_agent 各节点实现
-│   │   ├── chat_states.py        #   chat_agent 状态定义
-│   │   ├── prompts.py            #   所有提示词模板
-│   │   ├── sturcts.py            #   响应结构体 (NutritionAnalysis 等)
+├── agents/                       # --- LangGraph AI Agent ---
+│   ├── nutrition_agent/
+│   │   ├── agent.py              # 核心: nutrition_agent 图定义
+│   │   └── utils/                # nutrition_agent 节点/状态/提示词/结构体
+│   │       ├── nodes.py          #   nutrition_agent 各节点实现
+│   │       ├── states.py         #   nutrition_agent 状态定义
+│   │       ├── prompts.py        #   所有提示词模板
+│   │       └── sturcts.py        #   响应结构体 (NutritionAnalysis 等)
+│   ├── chat_agent/
+│   │   ├── chat_agent.py         # 核心: chat_agent 图定义
+│   │   ├── utils/                # chat_agent 节点/状态/提示词
+│   │   │   ├── chat_nodes.py     #   chat_agent 各节点实现
+│   │   │   └── chat_states.py    #   chat_agent 状态定义
+│   │   ├── enhanced_nutrition/   # 增强营养分析 Agent
+│   │   ├── goal_tracking/        # 目标追踪 Agent
+│   │   ├── diet_deep_agent/      # Deep Agents SDK Agent
+│   │   └── memory/              # 用户记忆管理（长期偏好记录）
+│   ├── common_utils/             # 公共工具: 图片处理、模型调用、RAG 检索、Redis、配置
 │   │   └── configuration.py      #   模型配置 (provider/model 切换)
 │   └── VectorStore/              # ChromaDB 持久化数据（营养知识向量库）
 │
@@ -331,7 +335,7 @@ users ──1:1── user_profiles          用户基本信息 + 详细档案
 
 1. **启动 Agent** - `uv run langgraph dev --port 2024`
 2. **访问 LangGraph Studio** - Agent 启动后会打印 Studio 地址，可在浏览器中可视化调试图的执行过程
-3. **修改 Agent** - 修改 `agent/` 下的代码后 Agent 服务会自动重载
+3. **修改 Agent** - 修改 `agents/` 下的代码后 Agent 服务会自动重载
 
 #### Agent 工作流 (nutrition_agent)
 
@@ -340,11 +344,11 @@ state_init → analyze_image → extract_nutrition → retrieve_nutrition_knowle
     → generate_dependencies → generate_advice → format_response
 ```
 
-每个节点对应 `agent/utils/nodes.py` 中的一个函数。状态定义在 `agent/utils/states.py`，提示词在 `agent/utils/prompts.py`。
+每个节点对应 `agents/nutrition_agent/utils/nodes.py` 中的一个函数。状态定义在 `agents/nutrition_agent/utils/states.py`，提示词在 `agents/nutrition_agent/utils/prompts.py`。
 
 #### 切换 AI 模型
 
-模型配置在 `agent/utils/configuration.py` 中，默认使用通义千问。可通过调用时传入 `configurable` 参数切换：
+模型配置在 `agents/common_utils/configuration.py` 中，默认使用通义千问。可通过调用时传入 `configurable` 参数切换：
 
 ```python
 # 通过 LangGraph SDK 调用时指定模型
@@ -362,7 +366,7 @@ config = {
 
 #### 更新向量知识库
 
-营养知识库存储在 `agent/VectorStore/`（已提交到仓库）。如需更新：
+营养知识库存储在 `agents/VectorStore/`（已提交到仓库）。如需更新：
 
 1. 编辑 `docs/Knowledge/nutrition_knowledge.txt`（本地 docs 目录不会提交）
 2. 运行 `uv run python vector_init.py` 重新生成向量数据

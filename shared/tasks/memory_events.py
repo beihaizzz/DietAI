@@ -41,8 +41,8 @@ async def on_food_record_created(
         db: Database session
     """
     try:
-        from agent.memory.memory_manager import MemoryManager
-        from agent.memory.sync_service import SyncService
+        from agents.chat_agent.memory.memory_manager import MemoryManager
+        from agents.chat_agent.memory.sync_service import SyncService
 
         logger.info(f"Processing food record event for user {user_id}, record {food_record_id}")
 
@@ -95,8 +95,8 @@ async def on_weight_recorded(
         db: Database session
     """
     try:
-        from agent.memory.memory_manager import MemoryManager
-        from agent.memory.sync_service import SyncService
+        from agents.chat_agent.memory.memory_manager import MemoryManager
+        from agents.chat_agent.memory.sync_service import SyncService
 
         logger.info(f"Processing weight record event for user {user_id}: {weight}kg")
 
@@ -143,8 +143,8 @@ async def on_goal_changed(
         db: Database session
     """
     try:
-        from agent.memory.memory_manager import MemoryManager
-        from agent.memory.sync_service import SyncService
+        from agents.chat_agent.memory.memory_manager import MemoryManager
+        from agents.chat_agent.memory.sync_service import SyncService
         from shared.utils.nutrition_calc import (
             calculate_bmr,
             calculate_tdee,
@@ -208,7 +208,7 @@ async def on_conversation_ended(
         db: Database session
     """
     try:
-        from agent.memory.memory_manager import MemoryManager
+        from agents.chat_agent.memory.memory_manager import MemoryManager
 
         logger.info(f"Processing conversation end event for user {user_id}, session {session_id}")
 
@@ -262,7 +262,7 @@ async def on_profile_updated(
         db: Database session
     """
     try:
-        from agent.memory.sync_service import SyncService
+        from agents.chat_agent.memory.sync_service import SyncService
 
         logger.info(f"Processing profile update event for user {user_id}")
 
@@ -294,7 +294,7 @@ async def on_allergy_updated(user_id: int, db: Session):
         db: Database session
     """
     try:
-        from agent.memory.sync_service import SyncService
+        from agents.chat_agent.memory.sync_service import SyncService
 
         logger.info(f"Processing allergy update event for user {user_id}")
 
@@ -318,7 +318,7 @@ async def on_disease_updated(user_id: int, db: Session):
         db: Database session
     """
     try:
-        from agent.memory.sync_service import SyncService
+        from agents.chat_agent.memory.sync_service import SyncService
 
         logger.info(f"Processing disease update event for user {user_id}")
 

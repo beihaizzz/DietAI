@@ -47,17 +47,17 @@ docker-compose logs -f dietai-backend      # View backend logs
 ### System Overview
 DietAI is an AI-powered diet management system with three main components:
 
-1. **LangGraph Agent System** (`agent/`)
+1. **LangGraph Agent System** (`agents/`)
    - Six graphs defined in `langgraph.json`:
-     - `nutrition_agent` (`agent/agent.py`): `state_init` → `analyze_image` → `extract_nutrition` → `retrieve_nutrition_knowledge` → `generate_dependencies` → `generate_advice` → `format_response`
-     - `enhanced_nutrition_agent` (`agent/enhanced_nutrition/enhanced_agent.py`): Enhanced version of nutrition analysis
-     - `chat_agent` (`agent/chat_agent.py`): `initialize_chat` → `analyze_context` → `generate_response` → `format_chat_response`
-     - `goal_tracking_agent` (`agent/goal_tracking/goal_agent.py`): Nutrition goal tracking and progress
-     - `diet_deep_agent` (`agent/diet_deep_agent/deep_agent.py`): Deep Agents SDK-based autonomous agent with skills/subagents/tools, LLM: DashScope `qwen3.5-plus`
-     - `test_agent` (`agent/test_agent.py`): Test graph for LangGraph service validation
+     - `nutrition_agent` (`agents/nutrition_agent/agent.py`): `state_init` → `analyze_image` → `extract_nutrition` → `retrieve_nutrition_knowledge` → `generate_dependencies` → `generate_advice` → `format_response`
+     - `enhanced_nutrition_agent` (`agents/chat_agent/enhanced_nutrition/enhanced_agent.py`): Enhanced version of nutrition analysis
+     - `chat_agent` (`agents/chat_agent/chat_agent.py`): `initialize_chat` → `analyze_context` → `generate_response` → `format_chat_response`
+     - `goal_tracking_agent` (`agents/chat_agent/goal_tracking/goal_agent.py`): Nutrition goal tracking and progress
+     - `diet_deep_agent` (`agents/chat_agent/diet_deep_agent/deep_agent.py`): Deep Agents SDK-based autonomous agent with skills/subagents/tools, LLM: DashScope `qwen3.5-plus`
+     - `test_agent` (`agents/chat_agent/test_agent.py`): Test graph for LangGraph service validation
    - RAG integration via ChromaDB vector store for nutrition knowledge retrieval
-   - Configurable vision/analysis models via `agent/utils/configuration.py`
-   - User memory system: MD file-based per-user workspaces at `agent/UserMemory/{user_id}/`
+   - Configurable vision/analysis models via `agents/common_utils/configuration.py`
+   - User memory system: MD file-based per-user workspaces at `agents/chat_agent/UserMemory/{user_id}/`
 
 2. **FastAPI Backend** (`main.py`, `routers/`, `shared/`)
    - All routes prefixed with `/api` (e.g., `/api/auth`, `/api/foods`)
@@ -72,13 +72,13 @@ DietAI is an AI-powered diet management system with three main components:
 ### Core Data Flow
 1. **Image Analysis**: Upload image → MinIO storage → LangGraph nutrition_agent → nutrition data extracted → stored in PostgreSQL with NutritionDetail
 2. **Chat**: Message → chat_router/analysis_chat_router → LangGraph chat_agent → response with context
-3. **Nutrition Knowledge**: Agent queries ChromaDB vector store (`agent/VectorStore/`) for relevant nutrition documents
+3. **Nutrition Knowledge**: Agent queries ChromaDB vector store (`agents/VectorStore/`) for relevant nutrition documents
 
 ### Key Integration Points
 - **LangGraph Agent**: SDK client at `http://127.0.0.1:2024`, graphs: `nutrition_agent`, `enhanced_nutrition_agent`, `chat_agent`, `goal_tracking_agent`, `diet_deep_agent`, `test_agent`
 - **MinIO**: Food images at `food_images/{user_id}/`, temporary URLs with expiration
 - **Redis**: Caching for nutrition summaries and RAG query results
-- **ChromaDB**: Vector store for nutrition knowledge RAG at `agent/VectorStore/`
+- **ChromaDB**: Vector store for nutrition knowledge RAG at `agents/VectorStore/`
 
 ### Environment Configuration
 Settings in `shared/config/settings.py` use `DIETAI_` prefix:
@@ -101,13 +101,13 @@ config={
 ```
 
 ### Structured Output Types
-Agent responses use Pydantic models in `agent/utils/sturcts.py`:
+Agent responses use Pydantic models in `agents/nutrition_agent/utils/sturcts.py`:
 - `NutritionAnalysis`: food_items, total_calories, macronutrients, vitamins_minerals, health_level
 - `NutritionAdvice`: recommendations, dietary_tips, warnings, alternative_foods
 - `AdviceDependencies`: nutrition_facts, health_guidelines, food_interactions
 
 ### DietDeepAgent
-- Built on `deepagents` SDK (LangChain Deep Agents), located at `agent/diet_deep_agent/`
+- Built on `deepagents` SDK (LangChain Deep Agents), located at `agents/chat_agent/diet_deep_agent/`
 - Structure: `deep_agent.py` (entry), `config.py`, `prompts.py`, `skills/`, `subagents/`, `tools/`, `memory/`
 - API via `routers/deep_router.py` → `/api/deep/*`:
   - `POST /api/deep/chat` — Unified chat (text, SSE streaming)

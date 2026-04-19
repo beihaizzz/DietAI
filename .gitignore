@@ -158,7 +158,7 @@ docker-compose.override.yml
 langgraph_cache/
 
 # ChromaDB vector store (rebuildable from source docs, large binary files)
-agent/VectorStore/
+agents/VectorStore/
 
 # ==========================================
 # IDE & Editors
