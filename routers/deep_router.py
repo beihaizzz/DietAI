@@ -204,22 +204,20 @@ async def get_user_memory(
         raise HTTPException(status_code=403, detail="只能查看自己的记忆")
 
     try:
-from agents.chat_agent.memory.memory_manager import MemoryManager
-from agents.chat_agent.diet_deep_agent.memory.md_store import MarkdownStore
+        from agents.chat_agent.memory.memory_manager import MemoryManager
+        from agents.chat_agent.diet_deep_agent.memory.md_store import MarkdownStore
 
         manager = MemoryManager(user_id)
         store = MarkdownStore()
 
-        # 读取所有 workspace
         workspaces = await manager.get_all_workspaces()
 
-        # 也读取 memories/ 目录下的文件
         memories_ns = ("memories", str(user_id))
         memory_files = {}
         for filename in ["profile.md", "goals.md", "nutrition.md", "preferences.md", "insights.md"]:
             item = store.get(memories_ns, filename)
             if item:
-                memory_files[filename] = item.value.get("content", "")[:500]  # 截断
+                memory_files[filename] = item.value.get("content", "")[:500]
 
         return {
             "user_id": user_id,

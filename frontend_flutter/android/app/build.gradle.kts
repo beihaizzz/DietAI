@@ -9,7 +9,7 @@ android {
     namespace = "com.example.dietai_flutter"
     compileSdk = flutter.compileSdkVersion
     // 👇 设置你想要的 NDK 版本（与插件要求一致）
-    ndkVersion = "27.0.12077973"
+    ndkVersion = "28.2.13676358"
 
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_11

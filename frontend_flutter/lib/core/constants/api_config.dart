@@ -4,11 +4,11 @@
 class ApiConfig {
   // 开发环境配置
   static const String devBaseUrl = 'http://localhost:8000';
-  static const String devLocalNetworkUrl = 'http://10.16.48.136:8000'; // 请修改为您的局域网IP
+  static const String devLocalNetworkUrl = 'http://192.168.1.108:8000'; // 请修改为您的局域网IP
 
   // MinIO配置
   static const String devMinioUrl = 'http://localhost:9000';
-  static const String devLocalNetworkMinioUrl = 'http://10.16.48.136:9000'; // 请修改为您的局域网IP
+  static const String devLocalNetworkMinioUrl = 'http://192.168.1.108:9000'; // 请修改为您的局域网IP
 
   // 生产环境配置
   static const String prodBaseUrl = 'https://your-production-api.com';
